@@ -1,4 +1,4 @@
-# JLU_Health_Bot
+# JLU Health Bot
 
 ![image](https://user-images.githubusercontent.com/8667822/90133379-efbf8280-dda1-11ea-9182-809572e7e258.png)
 
@@ -10,10 +10,12 @@
 
 **正在测试中。[@ehall_jlu_bot](http://t.me/ehall_jlu_bot)**
 
+本地测试过程中请勿使用上面部署了的 Bot。
+
 ## 部署向导
 
 ```bash
-export BOT_TOKNE=<YOUR_BOT_TOKEN>
+export BOT_TOKEN=<YOUR_BOT_TOKEN>
 
 pip install -r requirements.txt
 python main.py
