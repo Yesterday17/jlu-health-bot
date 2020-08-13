@@ -121,18 +121,36 @@ def step_room(message: Message):
         bot.reply_to(message, e.__str__())
 
 
-def rpt(name):
+def rpt(name, type: int):
     def report():
         for chat_id in user_dict:
-            health.report(bot, chat_id, user_dict[chat_id], name)
+            health.report(bot, chat_id, user_dict[chat_id], name, type)
 
     return report
 
 
-schedule.every().day.at("07:01").do(rpt("早打卡"))
-schedule.every().day.at("11:01").do(rpt("午打卡"))
-schedule.every().day.at("18:01").do(rpt("晚打卡"))
-schedule.every().day.at("21:01").do(rpt("晚点名"))
+schedule.every().day.at("07:20").do(rpt("早打卡", 0))
+schedule.every().day.at("11:20").do(rpt("午打卡", 1))
+schedule.every().day.at("18:20").do(rpt("晚打卡", 2))
+schedule.every().day.at("21:20").do(rpt("晚点名", 2))
+
+
+@bot.message_handler(commands=["trigger"])
+def trigger(message: Message):
+    if message.text == "/trigger 0":
+        rpt("早打卡", 0)
+    elif message.text == "/trigger 1":
+        rpt("午打卡", 1)
+    elif message.text == "/trigger 2":
+        rpt("晚打卡", 2)
+    elif message.text == "/trigger 3":
+        rpt("晚点名", 2)
+    else:
+        bot.reply_to(message, "/trigger 命令使用格式\n"
+                              "1. trigger 0：进行早打卡\n"
+                              "2. trigger 1：进行午打卡\n"
+                              "3. trigger 2 进行晚打卡\n"
+                              "4. trigger 3：进行晚点名")
 
 
 def schedule_continuous_run(interval=1):
