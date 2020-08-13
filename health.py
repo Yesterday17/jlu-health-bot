@@ -68,7 +68,7 @@ def report(bot: TeleBot, chat_id, user, name, type: int, max_retry=15, retry_int
             csrfToken = re.search('(?<=csrfToken" content=").{32}', r.text)[0]
             debug('CSRF: ' + csrfToken)
 
-            postPayload = {'idc': config['transaction'], 'csrfToken': csrfToken}
+            postPayload = {'idc': transaction, 'csrfToken': csrfToken}
             r = s.post('https://ehall.jlu.edu.cn/infoplus/interface/start', data=postPayload)
             data = json.loads(r.text)
             if data["errno"] != 0:
