@@ -10,8 +10,8 @@ import health
 from telebot.types import Message
 from telebot import apihelper
 
-if os.environ["PROXY"] != None:
-    apihelper.proxy = {"https": os.environ["PROXY"]}
+if os.environ.__contains__("TG_PROXY"):
+    apihelper.proxy = {"https": os.environ["TG_PROXY"]}
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
 bot = telebot.TeleBot(os.environ["BOT_TOKEN"], parse_mode=None, threaded=True)

@@ -8,12 +8,16 @@
 
 以 WTFPL 协议开源。
 
-**正在测试中。[@ehall_jlu_bot](http://t.me/ehall_jlu_bot)**
+**已部署到服务器，正在测试中。[@ehall_jlu_bot](http://t.me/ehall_jlu_bot)**
 
 ## 部署向导
 
 ```bash
 export BOT_TOKEN=<YOUR_BOT_TOKEN>
+export TG_PROXY=socks5://127.0.0.1:1080
+
+# work with jlu-http-proxy
+export REPORT_PROXY=https://127.0.0.1:1081
 
 pip install -r requirements.txt
 python main.py

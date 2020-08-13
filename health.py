@@ -1,5 +1,6 @@
 import re
 import json
+import os
 from time import time, sleep
 from logging import debug, error
 import urllib3
@@ -30,6 +31,11 @@ def report(bot: TeleBot, chat_id, user, name, max_retry=15, retry_interval=10):
             s = requests.Session()
             s.headers.update({'Referer': 'https://ehall.jlu.edu.cn/',
                               'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36'})
+            if os.environ.__contains__("REPORT_PROXY"):
+                s.proxies = {
+                    'http': os.environ["REPORT_PROXY"],
+                    'https': os.environ["REPORT_PROXY"],
+                }
             s.verify = False
 
             r = s.get('https://ehall.jlu.edu.cn/jlu_portal/login')
