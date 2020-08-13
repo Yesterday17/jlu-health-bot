@@ -10,8 +10,6 @@
 
 **正在测试中。[@ehall_jlu_bot](http://t.me/ehall_jlu_bot)**
 
-本地测试过程中请勿使用上面部署了的 Bot。
-
 ## 部署向导
 
 ```bash
