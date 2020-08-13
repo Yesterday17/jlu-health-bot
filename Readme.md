@@ -2,7 +2,7 @@
 
 ![image](https://user-images.githubusercontent.com/8667822/90133379-efbf8280-dda1-11ea-9182-809572e7e258.png)
 
-为吉林大学本科生每日健康情况申报所做的自动 Telegram Bot。
+为吉林大学本科生每日打卡所做的 Telegram Bot。
 
 核心代码引用自 [TechCiel/jlu-health-reporter](https://github.com/TechCiel/jlu-health-reporter) ，有部分修改。
 
