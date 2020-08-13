@@ -150,5 +150,5 @@ def schedule_continuous_run(interval=1):
 
 if __name__ == '__main__':
     load_config()
-    schedule_continuous_run(60)
+    schedule_continuous_run(10)
     bot.polling()

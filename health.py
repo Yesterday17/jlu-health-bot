@@ -29,7 +29,7 @@ def report(bot: TeleBot, chat_id, user, name, max_retry=15, retry_interval=10):
 
             s = requests.Session()
             s.headers.update({'Referer': 'https://ehall.jlu.edu.cn/',
-                              'User-Agent': 'ozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36'})
+                              'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36'})
             s.verify = False
 
             r = s.get('https://ehall.jlu.edu.cn/jlu_portal/login')
@@ -48,8 +48,8 @@ def report(bot: TeleBot, chat_id, user, name, max_retry=15, retry_interval=10):
 
             postPayload = {'idc': config['transaction'], 'csrfToken': csrfToken}
             r = s.post('https://ehall.jlu.edu.cn/infoplus/interface/start', data=postPayload)
-            if r.text[0] == '{':
-                data = json.loads(r.text)
+            data = json.loads(r.text)
+            if data["errno"] != 0:
                 bot.send_message(chat_id, data["error"])
                 return
             sid = re.search('(?<=form/)\\d*(?=/render)', r.text)[0]
