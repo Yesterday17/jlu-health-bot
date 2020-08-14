@@ -1,14 +1,16 @@
+import glob
 import json
 import os
-import glob
-import schedule
+import sys
 import threading
 import time
+
+import schedule
 import telebot
+from telebot import apihelper
+from telebot.types import Message
 
 import health
-from telebot.types import Message
-from telebot import apihelper
 
 if os.environ.__contains__("TG_PROXY"):
     apihelper.proxy = {"https": os.environ["TG_PROXY"]}
@@ -135,15 +137,15 @@ schedule.every().day.at("18:08").do(rpt("晚打卡", 2))
 schedule.every().day.at("21:10").do(rpt("晚点名", 2))
 
 
-@bot.message_handler(commands=["trigger", "trigger0", "trigger1", "trigger2", "trigger3"])
+@bot.message_handler(commands=["trigger", "asa", "hiru", "yoru", "fin"])
 def trigger(message: Message):
-    if message.text == "/trigger 0" or message.text == "/trigger0":
+    if message.text == "/trigger 0" or message.text == "/asa":
         rpt("早打卡", 0)()
-    elif message.text == "/trigger 1" or message.text == "/trigger1":
+    elif message.text == "/trigger 1" or message.text == "/hiru":
         rpt("午打卡", 1)()
-    elif message.text == "/trigger 2" or message.text == "/trigger2":
+    elif message.text == "/trigger 2" or message.text == "/yoru":
         rpt("晚打卡", 2)()
-    elif message.text == "/trigger 3" or message.text == "/trigger3":
+    elif message.text == "/trigger 3" or message.text == "/fin":
         rpt("晚点名", 2)()
     else:
         bot.reply_to(message, "/trigger 命令使用格式\n"
@@ -171,6 +173,9 @@ def schedule_continuous_run(interval=1):
 
 
 if __name__ == '__main__':
-    load_config()
-    schedule_continuous_run(10)
-    bot.polling()
+    try:
+        load_config()
+        schedule_continuous_run(10)
+        bot.polling()
+    except (KeyboardInterrupt, SystemExit):
+        sys.exit()

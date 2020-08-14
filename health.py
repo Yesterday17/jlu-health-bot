@@ -1,11 +1,11 @@
-import re
 import json
 import os
-from time import time, sleep
+import re
 from logging import debug, error
-import urllib3
-import requests
+from time import time, sleep
 
+import requests
+import urllib3
 from telebot import TeleBot
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
