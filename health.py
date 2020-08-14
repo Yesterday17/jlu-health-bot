@@ -120,8 +120,11 @@ def report(bot: TeleBot, chat_id, user, name, type: int, max_retry=15, retry_int
 
             if msg_login is not None:
                 bot.delete_message(chat_id, msg_login.message_id)
+                msg_login = None
             if msg_form is not None:
                 bot.delete_message(chat_id, msg_form.message_id)
+                msg_form = None
             if msg_submit is not None:
                 bot.delete_message(chat_id, msg_submit.message_id)
+                msg_submit = None
             sleep(retry_interval)
