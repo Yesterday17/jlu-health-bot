@@ -130,9 +130,9 @@ def rpt(name, type: int):
 
 
 schedule.every().day.at("07:20").do(rpt("早打卡", 0))
-schedule.every().day.at("11:20").do(rpt("午打卡", 1))
-schedule.every().day.at("18:20").do(rpt("晚打卡", 2))
-schedule.every().day.at("21:20").do(rpt("晚点名", 2))
+schedule.every().day.at("11:05").do(rpt("午打卡", 1))
+schedule.every().day.at("18:08").do(rpt("晚打卡", 2))
+schedule.every().day.at("21:10").do(rpt("晚点名", 2))
 
 
 @bot.message_handler(commands=["trigger", "trigger0", "trigger1", "trigger2", "trigger3"])
