@@ -39,22 +39,25 @@ def report(bot: TeleBot, chat_id, user, name, type: int, max_retry=15, retry_int
             if tries == 0:
                 bot.send_message(chat_id, "开始进行{}……".format(name))
             else:
-                bot.send_message(chat_id, "开始进行第 {}/{} 次{}重试……".format(tries + 1, max_retry, name))
+                bot.send_message(chat_id, "开始进行第 {}/{} 次{}重试……".format(tries, max_retry, name))
             msg_login = bot.send_message(chat_id, "登录中……")
 
             s = requests.Session()
-            s.headers.update({'Referer': 'https://ehall.jlu.edu.cn/',
-                              'User-Agent': 'Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36'})
+            s.headers.update({
+                "origin": "https://ehall.jlu.edu.cn",
+                "referer": "https://ehall.jlu.edu.cn/",
+                "User-Agent": "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.105 Safari/537.36",
+            })
             if os.environ.__contains__("REPORT_PROXY"):
                 s.proxies = {
                     'http': os.environ["REPORT_PROXY"],
                     'https': os.environ["REPORT_PROXY"],
                 }
+            s.trust_env = False
             s.verify = False
 
             r = s.get('https://ehall.jlu.edu.cn/jlu_portal/login')
             pid = re.search('(?<=name="pid" value=")[a-z0-9]{8}', r.text)[0]
-            sleep(1)
             debug('PID: ' + pid)
 
             postPayload = {'username': user['username'], 'password': user['password'], 'pid': pid}

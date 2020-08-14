@@ -135,16 +135,16 @@ schedule.every().day.at("18:20").do(rpt("晚打卡", 2))
 schedule.every().day.at("21:20").do(rpt("晚点名", 2))
 
 
-@bot.message_handler(commands=["trigger"])
+@bot.message_handler(commands=["trigger", "trigger0", "trigger1", "trigger2", "trigger3"])
 def trigger(message: Message):
-    if message.text == "/trigger 0":
-        rpt("早打卡", 0)
-    elif message.text == "/trigger 1":
-        rpt("午打卡", 1)
-    elif message.text == "/trigger 2":
-        rpt("晚打卡", 2)
-    elif message.text == "/trigger 3":
-        rpt("晚点名", 2)
+    if message.text == "/trigger 0" or message.text == "/trigger0":
+        rpt("早打卡", 0)()
+    elif message.text == "/trigger 1" or message.text == "/trigger1":
+        rpt("午打卡", 1)()
+    elif message.text == "/trigger 2" or message.text == "/trigger2":
+        rpt("晚打卡", 2)()
+    elif message.text == "/trigger 3" or message.text == "/trigger3":
+        rpt("晚点名", 2)()
     else:
         bot.reply_to(message, "/trigger 命令使用格式\n"
                               "1. trigger 0：进行早打卡\n"
