@@ -31,6 +31,11 @@ def save_user_config(chat_id):
     json.dump(info, open("./accounts/{}.json".format(chat_id), "w"))
 
 
+def remove_user_config(chat_id):
+    del user_dict[chat_id]
+    os.remove("./accounts/{}.json".format(chat_id))
+
+
 @bot.message_handler(commands=["info"])
 def info(message: Message):
     chat_id = message.chat.id
@@ -46,8 +51,26 @@ def info(message: Message):
                                               user["fields"]["fieldSQgyl"], user["fields"]["fieldSQqsh"]))
 
 
+@bot.message_handler(commands=["clear"])
+def clear(message: Message):
+    chat_id = message.chat.id
+    if chat_id not in user_dict:
+        bot.reply_to(message, "无用户信息！")
+    else:
+        remove_user_config(chat_id)
+        bot.reply_to(message, "用户信息已删除！")
+
+
 @bot.message_handler(commands=["start"])
 def start(message: Message):
+    chat_id = message.chat.id
+    if chat_id in user_dict:
+        info(message)
+    else:
+        step_preusername(message)
+
+
+def step_preusername(message: Message):
     msg = bot.reply_to(message, "欢迎使用本科生每日打卡 Bot。\n"
                                 "为正常使用该 Bot,请按照提示的步骤进行信息填写。\n"
                                 "\n"
@@ -118,7 +141,7 @@ def step_room(message: Message):
 
         save_user_config(chat_id)
         bot.send_message(chat_id, "信息填写完成！请使用 /info 查看信息。\n"
-                                  "如有信息错误，请使用 /start 重新开始本步骤。")
+                                  "如有信息错误，请使用 /clear 清除信息后通过 /start 重新填写信息。")
     except Exception as e:
         bot.reply_to(message, e.__str__())
 
@@ -134,6 +157,8 @@ def rpt(name, type: int):
 schedule.every().day.at("07:20").do(rpt("早打卡", 0))
 schedule.every().day.at("11:05").do(rpt("午打卡", 1))
 schedule.every().day.at("17:08").do(rpt("晚打卡", 2))
+
+
 # schedule.every().day.at("21:10").do(rpt("晚点名", 2))
 
 
@@ -161,21 +186,22 @@ def schedule_continuous_run(interval=1):
     class ScheduleThread(threading.Thread):
         @classmethod
         def run(cls):
-            # debug
-            # time.sleep(2)
-            # rpt("测试打卡")()
             while not cease_continuous_run.is_set():
                 schedule.run_pending()
                 time.sleep(interval)
 
     continuous_thread = ScheduleThread()
     continuous_thread.start()
+    return cease_continuous_run
 
 
 if __name__ == '__main__':
+    e = None
     try:
         load_config()
-        schedule_continuous_run(10)
+        e = schedule_continuous_run(10)
         bot.polling(none_stop=True)
     except (KeyboardInterrupt, SystemExit):
+        if e is not None:
+            e.set()
         sys.exit()
