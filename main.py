@@ -16,7 +16,7 @@ if "TG_PROXY" in os.environ:
     apihelper.proxy = {"https": os.environ["TG_PROXY"]}
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
-bot = telebot.TeleBot(os.environ["BOT_TOKEN"], parse_mode=None, threaded=True)
+bot = telebot.TeleBot(os.environ["BOT_TOKEN"], parse_mode=None)
 user_dict = {}
 
 
@@ -183,9 +183,9 @@ def rpt(name, type: int):
     return report
 
 
-schedule.every().day.at("07:20").do(rpt("早打卡", 0))
+schedule.every().day.at("07:05").do(rpt("早打卡", 0))
 schedule.every().day.at("11:05").do(rpt("午打卡", 1))
-schedule.every().day.at("17:08").do(rpt("晚打卡", 2))
+schedule.every().day.at("17:05").do(rpt("晚打卡", 2))
 
 
 # schedule.every().day.at("21:10").do(rpt("晚点名", 2))
@@ -218,6 +218,7 @@ def schedule_continuous_run(interval=1):
             while not cease_continuous_run.is_set():
                 schedule.run_pending()
                 time.sleep(interval)
+            sys.exit(0)
 
     continuous_thread = ScheduleThread()
     continuous_thread.start()
@@ -228,9 +229,11 @@ if __name__ == '__main__':
     e = None
     try:
         load_config()
-        e = schedule_continuous_run(10)
-        bot.polling(none_stop=True)
+        e = schedule_continuous_run(5)
+        try:
+            bot.polling()
+        except Exception as e:
+            time.sleep(1)
     except (KeyboardInterrupt, SystemExit):
         if e is not None:
             e.set()
-        sys.exit()
