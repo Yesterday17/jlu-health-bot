@@ -176,6 +176,6 @@ if __name__ == '__main__':
     try:
         load_config()
         schedule_continuous_run(10)
-        bot.polling()
+        bot.polling(none_stop=True)
     except (KeyboardInterrupt, SystemExit):
         sys.exit()
