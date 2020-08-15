@@ -230,10 +230,7 @@ if __name__ == '__main__':
     try:
         load_config()
         e = schedule_continuous_run(5)
-        try:
-            bot.polling()
-        except Exception as e:
-            time.sleep(1)
+        bot.infinity_polling()
     except (KeyboardInterrupt, SystemExit):
         if e is not None:
             e.set()
