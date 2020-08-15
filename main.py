@@ -12,7 +12,7 @@ from telebot.types import Message
 
 import health
 
-if os.environ.__contains__("TG_PROXY"):
+if "TG_PROXY" in os.environ:
     apihelper.proxy = {"https": os.environ["TG_PROXY"]}
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
@@ -59,6 +59,32 @@ def clear(message: Message):
     else:
         remove_user_config(chat_id)
         bot.reply_to(message, "用户信息已删除！")
+
+
+@bot.message_handler(commands=["pause"])
+def pause(message: Message):
+    chat_id = message.chat.id
+    if chat_id not in user_dict:
+        bot.reply_to(message, "无用户信息！")
+    elif user_dict[chat_id]["pause"]:
+        bot.reply_to(message, "自动打卡已处于暂停状态！")
+    else:
+        user_dict[chat_id]["pause"] = True
+        save_user_config(chat_id)
+        bot.reply_to(message, "自动打卡已暂停。")
+
+
+@bot.message_handler(commands=["resume"])
+def resume(message: Message):
+    chat_id = message.chat.id
+    if chat_id not in user_dict:
+        bot.reply_to(message, "无用户信息！")
+    elif not user_dict[chat_id]["pause"]:
+        bot.reply_to(message, "自动打卡已处于启动状态！")
+    else:
+        user_dict[chat_id]["pause"] = False
+        save_user_config(chat_id)
+        bot.reply_to(message, "自动打卡已恢复。")
 
 
 @bot.message_handler(commands=["start"])
@@ -149,7 +175,9 @@ def step_room(message: Message):
 def rpt(name, type: int):
     def report():
         for chat_id in user_dict:
-            health.report(bot, chat_id, user_dict[chat_id], name, type)
+            user = user_dict[chat_id]
+            if not user["pause"]:
+                health.report(bot, chat_id, user, name, type)
 
     return report
 

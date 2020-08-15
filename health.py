@@ -27,7 +27,7 @@ fields = [
 ]
 
 proxies = None
-if os.environ.__contains__("REPORT_PROXY"):
+if "REPORT_PROXY" in os.environ:
     proxies = os.environ["REPORT_PROXY"]
 
 

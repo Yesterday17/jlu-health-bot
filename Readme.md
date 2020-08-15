@@ -36,3 +36,5 @@ python main.py
 - /hiru：手动触发午间打卡
 - /yoru：手动触发晚打卡
 - /fin：手动触发晚点名
+- /pause：暂停自动打卡
+- /resume：恢复自动打卡
