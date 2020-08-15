@@ -111,6 +111,7 @@ def step_username(message: Message):
             "chat_id": chat_id,
             "username": message.text,
             "password": "",
+            "pause": False,
             "fields": {
                 "fieldSQxq": "",
                 "fieldSQgyl": "",
