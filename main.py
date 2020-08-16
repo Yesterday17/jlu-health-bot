@@ -226,11 +226,13 @@ def schedule_continuous_run(interval=1):
 
 
 if __name__ == '__main__':
-    e = None
-    try:
-        load_config()
-        e = schedule_continuous_run(5)
-        bot.infinity_polling()
-    except (KeyboardInterrupt, SystemExit):
-        if e is not None:
+    load_config()
+    e = schedule_continuous_run(5)
+
+    while not e.is_set():
+        try:
+            bot.infinity_polling()
+        except (KeyboardInterrupt, SystemExit):
             e.set()
+        except:
+            continue
