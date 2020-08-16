@@ -234,5 +234,6 @@ if __name__ == '__main__':
             bot.polling()
         except KeyboardInterrupt:
             e.set()
+            break
         except:
             continue
