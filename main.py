@@ -16,7 +16,7 @@ if "TG_PROXY" in os.environ:
     apihelper.proxy = {"https": os.environ["TG_PROXY"]}
 
 os.chdir(os.path.dirname(os.path.realpath(__file__)))
-bot = telebot.TeleBot(os.environ["BOT_TOKEN"], parse_mode=None)
+bot = telebot.TeleBot(os.environ["BOT_TOKEN"], parse_mode=None, threaded=False)
 user_dict = {}
 
 
@@ -231,8 +231,8 @@ if __name__ == '__main__':
 
     while not e.is_set():
         try:
-            bot.infinity_polling()
-        except (KeyboardInterrupt, SystemExit):
+            bot.polling()
+        except KeyboardInterrupt:
             e.set()
         except:
             continue
