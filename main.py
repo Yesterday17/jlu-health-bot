@@ -173,12 +173,18 @@ def step_room(message: Message):
         bot.reply_to(message, e.__str__())
 
 
-def rpt(name, type: int):
+def rpt(name, type: int, chat_id: int = 0):
     def report():
-        for chat_id in user_dict:
-            user = user_dict[chat_id]
-            if not user["pause"]:
-                health.report(bot, chat_id, user, name, type)
+        if chat_id == 0:
+            for chat in user_dict:
+                report_user(chat)
+        else:
+            report_user(chat_id)
+
+    def report_user(chat: int):
+        user = user_dict[chat]
+        if not user["pause"]:
+            health.report(bot, chat, user, name, type)
 
     return report
 
@@ -193,14 +199,15 @@ schedule.every().day.at("17:05").do(rpt("晚打卡", 2))
 
 @bot.message_handler(commands=["trigger", "asa", "hiru", "yoru", "fin"])
 def trigger(message: Message):
+    chat_id = message.chat.id
     if message.text == "/trigger 0" or message.text == "/asa":
-        rpt("早打卡", 0)()
+        rpt("早打卡", 0, chat_id)()
     elif message.text == "/trigger 1" or message.text == "/hiru":
-        rpt("午打卡", 1)()
+        rpt("午打卡", 1, chat_id)()
     elif message.text == "/trigger 2" or message.text == "/yoru":
-        rpt("晚打卡", 2)()
+        rpt("晚打卡", 2, chat_id)()
     elif message.text == "/trigger 3" or message.text == "/fin":
-        rpt("晚点名", 2)()
+        rpt("晚点名", 2, chat_id)()
     else:
         bot.reply_to(message, "/trigger 命令使用格式\n"
                               "1. trigger 0：进行早打卡\n"
