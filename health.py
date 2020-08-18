@@ -6,10 +6,8 @@ from time import time, sleep
 
 import httpx
 from telebot import TeleBot
-from fake_useragent import UserAgent
 
-ua = UserAgent(path="./fake_useragent.json")
-ua.update()
+from ua import UserAgent
 
 transaction = "BKSMRDK"
 fields = [
@@ -43,7 +41,7 @@ def report(bot: TeleBot, chat_id, user, name, type: int, max_retry=15, retry_int
         c = httpx.Client(trust_env=False, verify=False, http2=True, proxies=proxies, headers={
             "origin": "https://ehall.jlu.edu.cn",
             "referer": "https://ehall.jlu.edu.cn/",
-            "User-Agent": ua.random,
+            "User-Agent": UserAgent.chrome(),
         })
         try:
             if tries == 0:
