@@ -192,9 +192,7 @@ def rpt(name, type: int, chat_id: int = 0):
 schedule.every().day.at("07:05").do(rpt("早打卡", 0))
 schedule.every().day.at("11:05").do(rpt("午打卡", 1))
 schedule.every().day.at("17:05").do(rpt("晚打卡", 2))
-
-
-# schedule.every().day.at("21:10").do(rpt("晚点名", 2))
+schedule.every().day.at("21:10").do(rpt("晚点名", 2))
 
 
 @bot.message_handler(commands=["trigger", "asa", "hiru", "yoru", "fin"])
