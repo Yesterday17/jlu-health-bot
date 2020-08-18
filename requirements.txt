@@ -2,3 +2,4 @@ pyTelegramBotAPI
 schedule
 PySocks
 httpx[http2]
+fake-useragent
