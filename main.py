@@ -173,7 +173,7 @@ def step_room(message: Message):
         bot.reply_to(message, e.__str__())
 
 
-def rpt(name, type: int, chat_id: int = 0):
+def rpt(name, time: int, chat_id: int):
     def report():
         if chat_id == 0:
             for chat in user_dict:
@@ -184,15 +184,15 @@ def rpt(name, type: int, chat_id: int = 0):
     def report_user(chat: int):
         user = user_dict[chat]
         if not user["pause"]:
-            health.report(bot, chat, user, name, type)
+            health.report(bot, chat, user, name, time)
 
     return report
 
 
-schedule.every().day.at("07:05").do(rpt("早打卡", 0))
-schedule.every().day.at("11:05").do(rpt("午打卡", 1))
-schedule.every().day.at("17:05").do(rpt("晚打卡", 2))
-schedule.every().day.at("21:10").do(rpt("晚点名", 2))
+schedule.every().day.at("07:05").do(rpt("早打卡", 0, 0))
+schedule.every().day.at("11:05").do(rpt("午打卡", 1, 0))
+schedule.every().day.at("17:05").do(rpt("晚打卡", 2, 0))
+schedule.every().day.at("21:10").do(rpt("晚点名", 2, 0))
 
 
 @bot.message_handler(commands=["trigger", "asa", "hiru", "yoru", "fin"])
