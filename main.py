@@ -184,7 +184,10 @@ def rpt(name, time: int, chat_id: int):
     def report_user(chat: int):
         user = user_dict[chat]
         if not user["pause"]:
-            health.report(bot, chat, user, name, time)
+            try:
+                health.report(bot, chat, user, name, time)
+            except:
+                return
 
     return report
 
