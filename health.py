@@ -5,8 +5,8 @@ from logging import debug, error
 from time import time, sleep
 
 import httpx
-from telebot import TeleBot
 
+from main import BotAgent
 from ua import UserAgent
 
 transaction = "BKSMRDK"
@@ -33,7 +33,7 @@ if "REPORT_PROXY" in os.environ:
     proxies = os.environ["REPORT_PROXY"]
 
 
-def report(bot: TeleBot, chat_id, user, name, type: int, max_retry=15, retry_interval=10):
+def report(bot: BotAgent, chat_id, user, name, type: int, max_retry=15, retry_interval=10):
     msg_login = None
     msg_form = None
     msg_submit = None

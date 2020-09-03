@@ -7,7 +7,7 @@ import time
 
 import schedule
 import telebot
-from telebot import apihelper
+from telebot import apihelper, TeleBot
 from telebot.types import Message
 
 import health
@@ -173,6 +173,23 @@ def step_room(message: Message):
         bot.reply_to(message, e.__str__())
 
 
+class BotAgent:
+    def __init__(self, bot: TeleBot):
+        self.bot = bot
+
+    def send_message(self, chat_id: int, message: str):
+        try:
+            bot.send_message(chat_id, message)
+        except:
+            return
+
+    def delete_message(self, chat_id: int, message_id: int):
+        try:
+            bot.delete_message(chat_id, message_id)
+        except:
+            return
+
+
 def rpt(name, time: int, chat_id: int):
     def report():
         if chat_id == 0:
@@ -185,7 +202,7 @@ def rpt(name, time: int, chat_id: int):
         user = user_dict[chat]
         if not user["pause"]:
             try:
-                health.report(bot, chat, user, name, time)
+                health.report(BotAgent(bot), chat, user, name, time)
             except:
                 return
 
