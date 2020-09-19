@@ -179,13 +179,13 @@ class BotAgent:
 
     def send_message(self, chat_id: int, message: str):
         try:
-            self.bot.send_message(chat_id, message)
+            return self.bot.send_message(chat_id, message)
         except:
             return
 
     def delete_message(self, chat_id: int, message_id: int):
         try:
-            self.bot.delete_message(chat_id, message_id)
+            return self.bot.delete_message(chat_id, message_id)
         except:
             return
 
