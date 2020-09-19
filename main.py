@@ -174,18 +174,18 @@ def step_room(message: Message):
 
 
 class BotAgent:
-    def __init__(self, bot: TeleBot):
-        self.bot = bot
+    def __init__(self, my_bot: TeleBot):
+        self.bot = my_bot
 
     def send_message(self, chat_id: int, message: str):
         try:
-            bot.send_message(chat_id, message)
+            self.bot.send_message(chat_id, message)
         except:
             return
 
     def delete_message(self, chat_id: int, message_id: int):
         try:
-            bot.delete_message(chat_id, message_id)
+            self.bot.delete_message(chat_id, message_id)
         except:
             return
 
