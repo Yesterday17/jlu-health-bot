@@ -96,7 +96,7 @@ func (m ReportMode) Name() string {
 	case ReportMode11:
 		return "一测温一打卡"
 	case ReportModeLeaveSchool:
-		return "本科生健康状况申报"
+		return "本科生健康状况申报(尚未实现)"
 	default:
 		return "未知"
 	}

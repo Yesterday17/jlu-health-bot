@@ -6,21 +6,23 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
+	"path"
 	"regexp"
 	"strconv"
 	"time"
 )
 
 type User struct {
-	ChatId   int64      `json:"chat_id"`
-	Username string     `json:"username"`
-	Password string     `json:"password"`
-	Pause    bool       `json:"pause"`
+	ChatId   int64                  `json:"chat_id"`
+	Username string                 `json:"username"`
+	Password string                 `json:"password"`
+	Pause    bool                   `json:"pause"`
+	Fields   map[string]interface{} `json:"fields"`
+
 	Mode     ReportMode `json:"mode"`
 	MaxRetry int        `json:"max_retry"`
 
-	Fields map[string]interface{} `json:"fields"`
-	Jar    HealthJar              `json:"-"`
+	Jar HealthJar `json:"-"`
 }
 
 func NewUser(path string) (*User, error) {
@@ -40,11 +42,20 @@ func NewUser(path string) (*User, error) {
 	if u.MaxRetry == 0 {
 		u.MaxRetry = 8
 	}
+	// FIXME: Remove mode modification
 	if u.Mode == ReportModeNone {
 		u.Mode = ReportMode11
 	}
 
+	u.Save()
 	return &u, nil
+}
+
+func (u *User) Save() {
+	data, _ := json.Marshal(*u)
+
+	p := path.Join(Config.AccountsPath, strconv.FormatInt(u.ChatId, 10)+".json")
+	_ = ioutil.WriteFile(p, data, 0755)
 }
 
 func (u *User) NeedLogin() bool {

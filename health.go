@@ -14,10 +14,10 @@ type ReportTime uint8
 func ReportAll(b *tb.Bot, m ReportMode) {
 	Users.Range(func(key, value interface{}) bool {
 		user := value.(*User)
-		if m == user.Mode {
+		if m == user.Mode && !user.Pause {
 			Report(b, m.GetReportTime(), user)
+			time.Sleep(30 * time.Second)
 		}
-		time.Sleep(30 * time.Second)
 		return true
 	})
 }
