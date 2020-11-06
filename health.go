@@ -11,6 +11,17 @@ import (
 
 type ReportTime uint8
 
+func ReportAll(b *tb.Bot, m ReportMode) {
+	Users.Range(func(key, value interface{}) bool {
+		user := value.(*User)
+		if m == user.Mode {
+			Report(b, m.GetReportTime(), user)
+		}
+		time.Sleep(30 * time.Second)
+		return true
+	})
+}
+
 func Report(bot *tb.Bot, t ReportTime, u *User) {
 	var fields = GetReportFields(t)
 	var msg *tb.Message

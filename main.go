@@ -25,12 +25,14 @@ func main() {
 	}
 
 	b, err := tb.NewBot(tb.Settings{
-		Token:  token,
+		Token:  Config.Token,
 		Poller: &tb.LongPoller{Timeout: 10 * time.Second},
 	})
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	InitCronJobs(b)
 
 	b.Handle("/report", func(m *tb.Message) {
 		user, ok := Users.Load(m.Chat.ID)

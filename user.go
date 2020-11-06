@@ -169,7 +169,7 @@ func (u *User) getFormPage(csrf, sid string) (url.Values, map[string]interface{}
 
 	var boundFields string
 	for k := range resp.Entities[0].Fields {
-		boundFields += k
+		boundFields += "," + k
 	}
 	form := url.Values{
 		"actionId":    {"1"},
@@ -177,7 +177,7 @@ func (u *User) getFormPage(csrf, sid string) (url.Values, map[string]interface{}
 		"stepId":      {sid},
 		"timestamp":   {strconv.FormatInt(time.Now().Unix(), 10)},
 		"csrfToken":   {csrf},
-		"boundFields": {boundFields},
+		"boundFields": {boundFields[1:]},
 		"formData":    {},
 	}
 	return form, resp.Entities[0].Data, nil
