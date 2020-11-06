@@ -77,7 +77,10 @@ func (u *User) Post(url *url.URL, body url.Values) (*http.Response, error) {
 	req := u.prepareRequest("POST", url)
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
-	req.Body = ioutil.NopCloser(strings.NewReader(body.Encode()))
+
+	b := strings.NewReader(body.Encode())
+	req.ContentLength = int64(b.Len())
+	req.Body = ioutil.NopCloser(b)
 	return c.Do(req)
 }
 

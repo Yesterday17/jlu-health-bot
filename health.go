@@ -40,7 +40,7 @@ func Report(bot *tb.Bot, t ReportTime, u *User) {
 		}
 		if err != nil {
 			_, _ = bot.Send(tb.ChatID(u.ChatId), fmt.Sprintf("登录失败：%s", err.Error()))
-			time.Sleep(5 * time.Second)
+			time.Sleep(10 * time.Second)
 			continue
 		}
 
@@ -55,7 +55,7 @@ func Report(bot *tb.Bot, t ReportTime, u *User) {
 				break
 			}
 
-			time.Sleep(5 * time.Second)
+			time.Sleep(10 * time.Second)
 			continue
 		}
 
@@ -69,12 +69,12 @@ func Report(bot *tb.Bot, t ReportTime, u *User) {
 			_ = bot.Delete(msg)
 		}
 		if err != nil {
-			_, _ = bot.Send(tb.ChatID(u.ChatId), fmt.Sprintf("登录失败：%s", err.Error()))
+			_, _ = bot.Send(tb.ChatID(u.ChatId), fmt.Sprintf("打卡失败：%s", err.Error()))
 			if errors.Is(err, EhallSystemError) {
 				break
 			}
 
-			time.Sleep(5 * time.Second)
+			time.Sleep(10 * time.Second)
 			continue
 		}
 
