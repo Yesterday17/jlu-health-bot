@@ -1,4 +1,0 @@
-pyTelegramBotAPI
-schedule
-PySocks
-httpx[http2]
