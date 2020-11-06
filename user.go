@@ -10,6 +10,7 @@ import (
 	"path"
 	"regexp"
 	"strconv"
+	"strings"
 	"time"
 )
 
@@ -68,17 +69,12 @@ func (u *User) Remove() {
 	_ = os.Remove(p)
 }
 
-func (u *User) NeedLogin() bool {
-	return u.Jar.IsEmpty(EhallLoginPage) || u.NeedRedirect(EhallLoginPage)
-}
-
 func (u *User) Login() error {
-	if !u.NeedLogin() {
-		return nil
-	}
-
 	r, err := u.Get(EhallLoginPage)
 	if err != nil {
+		return err
+	} else if strings.Contains(r, "今日访问量") {
+		// cookie in jar
 		return nil
 	}
 

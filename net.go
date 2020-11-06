@@ -38,25 +38,11 @@ func NewHealthJar() HealthJar {
 	return &healthJar{jar: jar}
 }
 
-func (u *User) NeedRedirect(url *url.URL) bool {
-	c := &http.Client{
-		Jar: u.Jar,
-		CheckRedirect: func(req *http.Request, via []*http.Request) error {
-			return http.ErrUseLastResponse
-		},
-	}
-	req := u.prepareRequest("GET", url)
-	resp, err := c.Do(req)
-	if err != nil {
-		return true
-	}
-
-	// 30x
-	return resp.StatusCode > 300 && resp.StatusCode < 400
-}
-
 func (u *User) Get(url *url.URL) (string, error) {
-	c := &http.Client{Jar: u.Jar, Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
+	c := &http.Client{
+		Jar:       u.Jar,
+		Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
+	}
 	req := u.prepareRequest("GET", url)
 	resp, err := c.Do(req)
 	if err != nil {
@@ -73,7 +59,10 @@ func (u *User) Get(url *url.URL) (string, error) {
 }
 
 func (u *User) Post(url *url.URL, body url.Values) (*http.Response, error) {
-	c := &http.Client{Jar: u.Jar, Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}}}
+	c := &http.Client{
+		Jar:       u.Jar,
+		Transport: &http.Transport{TLSClientConfig: &tls.Config{InsecureSkipVerify: true}},
+	}
 	req := u.prepareRequest("POST", url)
 
 	req.Header.Set("Content-Type", "application/x-www-form-urlencoded; charset=UTF-8")
