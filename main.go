@@ -2,6 +2,7 @@ package main
 
 import (
 	"flag"
+	"fmt"
 	"log"
 	"time"
 
@@ -50,6 +51,22 @@ func main() {
 		Report(b, t, u)
 	})
 
+	b.Handle("/info", func(m *tb.Message) {
+		user, ok := Users.Load(m.Chat.ID)
+		if !ok {
+			return
+		}
+
+		u := user.(*User)
+		_, _ = b.Reply(m, fmt.Sprintf("用户名：%s\n"+
+			"密码：[隐藏]\n"+
+			"校区：%s\n"+
+			"寝室楼号：%s\n"+
+			"寝室号：%s\n",
+			u.Username, u.Fields["fieldSQxq"], u.Fields["fieldSQgyl"], u.Fields["fieldSQqsh"],
+		))
+	})
+
 	b.Handle("/mode", func(m *tb.Message) {
 		user, ok := Users.Load(m.Chat.ID)
 		if !ok {
@@ -82,6 +99,17 @@ func main() {
 		u.Pause = false
 		u.Save()
 		_, _ = b.Reply(m, "自动打卡已恢复。")
+	})
+
+	b.Handle("/del", func(m *tb.Message) {
+		user, ok := Users.Load(m.Chat.ID)
+		if !ok {
+			return
+		}
+
+		u := user.(*User)
+		u.Remove()
+		_, _ = b.Reply(m, "用户信息已删除。")
 	})
 
 	b.Start()

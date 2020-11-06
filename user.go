@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io/ioutil"
 	"net/url"
+	"os"
 	"path"
 	"regexp"
 	"strconv"
@@ -56,6 +57,15 @@ func (u *User) Save() {
 
 	p := path.Join(Config.AccountsPath, strconv.FormatInt(u.ChatId, 10)+".json")
 	_ = ioutil.WriteFile(p, data, 0755)
+}
+
+func (u *User) Remove() {
+	// Remove in map
+	Users.Delete(u.ChatId)
+
+	// Remove json
+	p := path.Join(Config.AccountsPath, strconv.FormatInt(u.ChatId, 10)+".json")
+	_ = os.Remove(p)
 }
 
 func (u *User) NeedLogin() bool {

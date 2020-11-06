@@ -1,5 +1,2 @@
-venv
 .idea
-
-config.json
-accounts/*.json
+*.json
