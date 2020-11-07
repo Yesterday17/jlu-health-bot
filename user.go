@@ -219,3 +219,9 @@ func (u *User) DoReport(body url.Values) error {
 
 	return nil
 }
+
+func (u *User) MergeTo(m *map[string]interface{}) {
+	for k, v := range u.Fields {
+		(*m)[k] = v
+	}
+}

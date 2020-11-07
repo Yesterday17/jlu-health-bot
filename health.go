@@ -59,6 +59,7 @@ func Report(bot *tb.Bot, t ReportTime, u *User) {
 			continue
 		}
 
+		u.MergeTo(&form)
 		fields.MergeTo(&form)
 		formJson, _ := json.Marshal(form)
 		body.Set("formData", string(formJson))
