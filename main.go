@@ -14,7 +14,7 @@ func main() {
 	var maxUsers uint
 	flag.StringVar(&token, "token", "", "Telegram Bot Token")
 	flag.StringVar(&proxy, "proxy", "", "http 代理地址")
-	flag.StringVar(&owner, "owner", "", "Bot 拥有者 ID")
+	flag.StringVar(&owner, "owner", "", "Bot 拥有者用户名")
 	flag.StringVar(&accountsPath, "accounts-path", "./accounts/", "存储用户帐户的路径")
 	flag.UintVar(&maxUsers, "max-users", 8, "最大用户数量")
 	flag.Parse()
@@ -110,6 +110,22 @@ func main() {
 		u := user.(*User)
 		u.Remove()
 		_, _ = b.Reply(m, "用户信息已删除。")
+	})
+
+	b.Handle("/reportall", func(m *tb.Message) {
+		if m.Sender.Username != Config.Owner {
+			return
+		}
+
+		switch m.Payload {
+		case "31":
+			ReportAll(b, ReportMode31)
+		case "11":
+			ReportAll(b, ReportMode11)
+		default:
+			return
+		}
+		_, _ = b.Reply(m, "已触发全体重打卡。")
 	})
 
 	b.Start()
