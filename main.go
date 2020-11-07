@@ -119,13 +119,14 @@ func main() {
 
 		switch m.Payload {
 		case "31":
-			ReportAll(b, ReportMode31)
+			go ReportAll(b, ReportMode31, "管理员触发了一次全体打卡。")
 		case "11":
-			ReportAll(b, ReportMode11)
+			go ReportAll(b, ReportMode11, "管理员触发了一次全体打卡。")
 		default:
 			return
 		}
-		_, _ = b.Reply(m, "已触发全体重打卡。")
+
+		_, _ = b.Reply(m, "已触发一次全体打卡。")
 	})
 
 	b.Start()
