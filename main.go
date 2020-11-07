@@ -48,7 +48,7 @@ func main() {
 			return
 		}
 
-		Report(b, t, u)
+		go Report(b, t, u)
 	})
 
 	b.Handle("/info", func(m *tb.Message) {
@@ -127,6 +127,18 @@ func main() {
 		}
 
 		_, _ = b.Reply(m, "已触发一次全体打卡。")
+	})
+
+	b.Handle("/broadcast", func(m *tb.Message) {
+		if m.Sender.Username != Config.Owner {
+			return
+		}
+
+		go Users.Range(func(key, value interface{}) bool {
+			u := value.(*User)
+			_, _ = b.Send(tb.ChatID(u.ChatId), m.Payload)
+			return true
+		})
 	})
 
 	b.Start()

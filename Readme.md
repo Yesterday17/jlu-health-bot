@@ -21,3 +21,4 @@
 - [x] /pause：暂停自动打卡
 - [x] /resume：恢复自动打卡
 - [x] /reportall \[31|11\]：（管理）触发全体重打卡
+- [x] /broadcast：（管理）通过 Bot 向所有用户发布消息
