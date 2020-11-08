@@ -7,12 +7,12 @@ import (
 )
 
 var (
-	EhallLoginPage, _      = url.Parse("https://ehall.jlu.edu.cn/jlu_portal/login")
-	EhallSSOLoginPage, _   = url.Parse("https://ehall.jlu.edu.cn/sso/login")
-	EhallFormCSRFPage, _   = url.Parse("https://ehall.jlu.edu.cn/infoplus/form/BKSMRDK/start")
-	EhallFormStartPage, _  = url.Parse("https://ehall.jlu.edu.cn/infoplus/interface/start")
-	EhallFormRenderPage, _ = url.Parse("https://ehall.jlu.edu.cn/infoplus/interface/render")
-	EhallDoActionPage, _   = url.Parse("https://ehall.jlu.edu.cn/infoplus/interface/doAction")
+	EhallLoginPendingPage, _ = url.Parse("https://ehall.jlu.edu.cn/taskcenter/workflow/index")
+	EhallSSOLoginPage, _     = url.Parse("https://ehall.jlu.edu.cn/sso/login")
+	EhallFormCSRFPage, _     = url.Parse("https://ehall.jlu.edu.cn/infoplus/form/BKSMRDK/start")
+	EhallFormStartPage, _    = url.Parse("https://ehall.jlu.edu.cn/infoplus/interface/start")
+	EhallFormRenderPage, _   = url.Parse("https://ehall.jlu.edu.cn/infoplus/interface/render")
+	EhallDoActionPage, _     = url.Parse("https://ehall.jlu.edu.cn/infoplus/interface/doAction")
 
 	EhallSystemError = errors.New("系统返回错误，将不再重试。\n错误信息：")
 )

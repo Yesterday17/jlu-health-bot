@@ -70,10 +70,10 @@ func (u *User) Remove() {
 }
 
 func (u *User) Login() error {
-	r, err := u.Get(EhallLoginPage)
+	r, err := u.Get(EhallLoginPendingPage)
 	if err != nil {
 		return err
-	} else if strings.Contains(r, "今日访问量") {
+	} else if !strings.Contains(r, "统一身份认证") {
 		// cookie in jar
 		return nil
 	}
