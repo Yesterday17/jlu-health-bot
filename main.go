@@ -4,7 +4,6 @@ import (
 	"flag"
 	"fmt"
 	"log"
-	"strings"
 	"time"
 
 	tb "gopkg.in/tucnak/telebot.v2"
@@ -59,27 +58,27 @@ func main() {
 		}
 
 		u := user.(*User)
-		r := strings.Split(m.Payload, " ")
-		if len(r) == 0 {
-			_, _ = b.Reply(m, "请提供待设置字段 的 Key 和 Value！")
+		err := u.SetBotField(m.Payload)
+		if err != nil {
+			_, _ = b.Reply(m, err.Error())
+		}
+
+		_, _ = b.Reply(m, "设置完成。")
+	})
+
+	b.Handle("/botfield", func(m *tb.Message) {
+		user, ok := Users.Load(m.Chat.ID)
+		if !ok {
 			return
 		}
 
-		var k, v string
-		k = r[0]
-		if len(r) == 1 {
-			v = ""
-		} else {
-			v = r[1]
+		u := user.(*User)
+		err := u.SetBotField("bot/" + m.Payload)
+		if err != nil {
+			_, _ = b.Reply(m, err.Error())
 		}
 
-		u.Fields[k] = v
-		u.Save()
-
-		if v == "" {
-			v = "#空字符串"
-		}
-		_, _ = b.Reply(m, fmt.Sprintf("已将字段 %s 设置为 %s。", k, v))
+		_, _ = b.Reply(m, "设置完成。")
 	})
 
 	b.Handle("/info", func(m *tb.Message) {

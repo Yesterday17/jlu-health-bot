@@ -330,3 +330,22 @@ func (u *User) GetBotField(key string) (string, error) {
 
 	return v, nil
 }
+
+func (u *User) SetBotField(cmd string) error {
+	r := strings.Split(cmd, " ")
+	if len(r) == 0 || r[0] == "bot/" {
+		return errors.New("请提供待设置字段 的 Key 和 Value！")
+	}
+
+	var k, v string
+	k = r[0]
+	if len(r) == 1 {
+		v = ""
+	} else {
+		v = r[1]
+	}
+
+	u.Fields[k] = v
+	u.Save()
+	return nil
+}
