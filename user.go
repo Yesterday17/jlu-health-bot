@@ -278,6 +278,7 @@ func (u *User) SuggestField(form *FormInfo, field FieldInfo, choice, csrf string
 		for _, s := range result.Items {
 			if s.CodeName == choice {
 				form.Data[field.Name] = s.CodeId
+				form.Data[field.Name+"_Name"] = s.CodeName
 				form.Data[field.Name+"_Attr"] = fmt.Sprintf(`{"_parent": "%s"}`, parent)
 				return nil
 			}

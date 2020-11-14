@@ -66,27 +66,30 @@ func Report(bot *tb.Bot, t ReportTime, u *User) {
 		u.MergeTo(&form.Data)
 		fields.MergeTo(&form.Data)
 
-		// merge Suggest fields
-		cNj, err := u.GetBotField("nj")
-		if err != nil {
-			_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
-			break
-		}
-		err = u.SuggestField(form, form.Fields["fieldSQnj"], cNj, csrf)
-		if err != nil {
-			_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
-			break
-		}
+		// Suggest fields if needed
+		if form.Data["fieldSQbj"] == "" || form.Data["fieldSQbj_Name"] == "null" {
+			// merge Suggest fields
+			cNj, err := u.GetBotField("nj")
+			if err != nil {
+				_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
+				break
+			}
+			err = u.SuggestField(form, form.Fields["fieldSQnj"], cNj, csrf)
+			if err != nil {
+				_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
+				break
+			}
 
-		cBj, err := u.GetBotField("bj")
-		if err != nil {
-			_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
-			break
-		}
-		err = u.SuggestField(form, form.Fields["fieldSQbj"], cBj, csrf)
-		if err != nil {
-			_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
-			break
+			cBj, err := u.GetBotField("bj")
+			if err != nil {
+				_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
+				break
+			}
+			err = u.SuggestField(form, form.Fields["fieldSQbj"], cBj, csrf)
+			if err != nil {
+				_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
+				break
+			}
 		}
 
 		formJson, _ := json.Marshal(form.Data)
