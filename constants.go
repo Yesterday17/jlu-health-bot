@@ -12,9 +12,12 @@ var (
 	EhallFormCSRFPage, _     = url.Parse("https://ehall.jlu.edu.cn/infoplus/form/BKSMRDK/start")
 	EhallFormStartPage, _    = url.Parse("https://ehall.jlu.edu.cn/infoplus/interface/start")
 	EhallFormRenderPage, _   = url.Parse("https://ehall.jlu.edu.cn/infoplus/interface/render")
+	EhallFieldSuggestPage, _ = url.Parse("https://ehall.jlu.edu.cn/infoplus/interface/suggest")
 	EhallDoActionPage, _     = url.Parse("https://ehall.jlu.edu.cn/infoplus/interface/doAction")
 
 	EhallSystemError = errors.New("系统返回错误，将不再重试。\n错误信息：")
+
+	SuggestPageItemCount = 15
 )
 
 const (

@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"io/ioutil"
+	"math/rand"
 	"net/url"
 	"os"
 	"path"
@@ -15,11 +16,11 @@ import (
 )
 
 type User struct {
-	ChatId   int64                  `json:"chat_id"`
-	Username string                 `json:"username"`
-	Password string                 `json:"password"`
-	Pause    bool                   `json:"pause"`
-	Fields   map[string]interface{} `json:"fields"`
+	ChatId   int64             `json:"chat_id"`
+	Username string            `json:"username"`
+	Password string            `json:"password"`
+	Pause    bool              `json:"pause"`
+	Fields   map[string]string `json:"fields"`
 
 	Mode     ReportMode `json:"mode"`
 	MaxRetry int        `json:"max_retry"`
@@ -101,15 +102,15 @@ func (u *User) Login() error {
 	return nil
 }
 
-func (u *User) GetForm() (url.Values, map[string]interface{}, error) {
+func (u *User) GetForm() (string, url.Values, *FormInfo, error) {
 	csrf, err := u.getFormCSRF()
 	if err != nil {
-		return nil, nil, err
+		return "", nil, nil, err
 	}
 
 	sid, err := u.getFormStepId(csrf)
 	if err != nil {
-		return nil, nil, err
+		return csrf, nil, nil, err
 	}
 
 	return u.getFormPage(csrf, sid)
@@ -158,37 +159,54 @@ func (u *User) getFormStepId(csrf string) (string, error) {
 	return match[1], nil
 }
 
-func (u *User) getFormPage(csrf, sid string) (url.Values, map[string]interface{}, error) {
+type FormInfo struct {
+	Data   map[string]interface{} `json:"data"`
+	Fields map[string]FieldInfo   `json:"fields"`
+	Step   StepInfo               `json:"step"`
+}
+
+type FieldInfo struct {
+	Label  string `json:"label"` // display field
+	Name   string `json:"name"`  // form[field.Name] = xx
+	Code   string `json:"code"`  // code in suggest
+	Type   string `json:"type"`  // Code
+	Parent string `json:"parent"`
+}
+
+type StepInfo struct {
+	InstanceId string `json:"instanceId"`
+	EntryId    int64  `json:"entryId"`
+	StepId     int64  `json:"flowStepId"`
+}
+
+func (u *User) getFormPage(csrf, sid string) (string, url.Values, *FormInfo, error) {
 	r, err := u.PostB(EhallFormRenderPage, map[string][]string{
 		"stepId":    {sid},
 		"csrfToken": {csrf},
 	})
 	if err != nil {
-		return nil, nil, err
+		return csrf, nil, nil, err
 	}
 	var resp struct {
-		Errno    int    `json:"errno"`
-		Error    string `json:"error"`
-		Entities []struct {
-			Data   map[string]interface{} `json:"data"`
-			Fields map[string]interface{} `json:"fields"`
-		} `json:"entities"`
+		Errno    int        `json:"errno"`
+		Error    string     `json:"error"`
+		Entities []FormInfo `json:"entities"`
 	}
 	err = json.Unmarshal(r, &resp)
 	if err != nil {
-		return nil, nil, err
+		return csrf, nil, nil, err
 	} else if resp.Errno != 0 {
-		return nil, nil, NewEhallSystemError(resp.Error, resp.Errno)
+		return csrf, nil, nil, NewEhallSystemError(resp.Error, resp.Errno)
 	}
 	if len(resp.Entities) == 0 {
-		return nil, nil, errors.New("entities 数量为 0")
+		return csrf, nil, nil, errors.New("entities 数量为 0")
 	}
 
 	var boundFields string
 	for k := range resp.Entities[0].Fields {
 		boundFields += "," + k
 	}
-	form := url.Values{
+	body := url.Values{
 		"actionId":    {"1"},
 		"nextUsers":   {"{}"},
 		"stepId":      {sid},
@@ -197,7 +215,82 @@ func (u *User) getFormPage(csrf, sid string) (url.Values, map[string]interface{}
 		"boundFields": {boundFields[1:]},
 		"formData":    {},
 	}
-	return form, resp.Entities[0].Data, nil
+	return csrf, body, &resp.Entities[0], nil
+}
+
+type SuggestResult struct {
+	CodeId   string `json:"codeId"`
+	CodeName string `json:"codeName"`
+	ParentId string `json:"parentId"`
+	Enabled  bool   `json:"enabled"`
+}
+
+func (u *User) SuggestField(form *FormInfo, field FieldInfo, choice, csrf string) error {
+	var parent string
+	if field.Parent != "" {
+		p := form.Data[field.Parent]
+		switch p {
+		case p.(string):
+			parent = p.(string)
+		default:
+			return fmt.Errorf("字段 %s 的 parent 字段 %s 不存在！", field.Name, field.Parent)
+		}
+		if parent == "" {
+			return fmt.Errorf("字段 %s(%s) 的 parent 字段 %s(%s) 为空！",
+				field.Label, field.Name, form.Fields[field.Parent].Label, field.Parent)
+		}
+	}
+
+	var pageId = 0
+	for {
+		r, err := u.PostB(EhallFieldSuggestPage, map[string][]string{
+			"prefix":     {""},
+			"type":       {field.Type},
+			"code":       {field.Code},
+			"parent":     {parent},
+			"isTopLevel": {"false"},
+			"pageNo":     {strconv.Itoa(pageId)},
+			"rand":       {strconv.FormatFloat(rand.Float64()*999, 'G', 30, 32)},
+			"settings":   {"{}"},
+			"csrfToken":  {csrf},
+			"lang":       {"zh"},
+			"instanceId": {form.Step.InstanceId},
+			"stepId":     {strconv.FormatInt(form.Step.StepId, 10)},
+			"entryId":    {strconv.FormatInt(form.Step.EntryId, 10)},
+			"workflowId": {"null"},
+		})
+		if err != nil {
+			return err
+		}
+
+		var result struct {
+			Items []SuggestResult `json:"items"`
+		}
+		err = json.Unmarshal(r, &result)
+		if err != nil {
+			return err
+		}
+
+		if len(result.Items) == 0 {
+			return fmt.Errorf("未找到 %s(%s) 为 %s 的选项！", field.Label, field.Name, choice)
+		}
+
+		for _, s := range result.Items {
+			if s.CodeName == choice {
+				form.Data[field.Name] = s.CodeId
+				form.Data[field.Name+"_Attr"] = fmt.Sprintf(`{"_parent": "%s"}`, parent)
+				return nil
+			}
+		}
+
+		// Last page
+		if len(result.Items) < SuggestPageItemCount {
+			return fmt.Errorf("未找到 %s(%s) 为 %s 的选项！", field.Label, field.Name, choice)
+		}
+
+		// Next page
+		pageId++
+	}
 }
 
 func (u *User) DoReport(body url.Values) error {
@@ -222,6 +315,18 @@ func (u *User) DoReport(body url.Values) error {
 
 func (u *User) MergeTo(m *map[string]interface{}) {
 	for k, v := range u.Fields {
-		(*m)[k] = v
+		// Ignore "bot/${field}"
+		if !strings.HasPrefix(k, "bot/") {
+			(*m)[k] = v
+		}
 	}
+}
+
+func (u *User) GetBotField(key string) (string, error) {
+	v, ok := u.Fields["bot/"+key]
+	if !ok {
+		return "", errors.New(key + " 字段不存在！")
+	}
+
+	return v, nil
 }

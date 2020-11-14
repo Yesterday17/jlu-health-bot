@@ -48,7 +48,7 @@ func Report(bot *tb.Bot, t ReportTime, u *User) {
 		}
 
 		msg, _ = bot.Send(tb.ChatID(u.ChatId), fmt.Sprintf("登录成功！正在获取表单……"))
-		body, form, err := u.GetForm()
+		csrf, body, form, err := u.GetForm()
 		if msg != nil {
 			_ = bot.Delete(msg)
 		}
@@ -62,9 +62,34 @@ func Report(bot *tb.Bot, t ReportTime, u *User) {
 			continue
 		}
 
-		u.MergeTo(&form)
-		fields.MergeTo(&form)
-		formJson, _ := json.Marshal(form)
+		// Merge common fields
+		u.MergeTo(&form.Data)
+		fields.MergeTo(&form.Data)
+
+		// merge Suggest fields
+		cNj, err := u.GetBotField("nj")
+		if err != nil {
+			_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
+			break
+		}
+		err = u.SuggestField(form, form.Fields["fieldSQnj"], cNj, csrf)
+		if err != nil {
+			_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
+			break
+		}
+
+		cBj, err := u.GetBotField("bj")
+		if err != nil {
+			_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
+			break
+		}
+		err = u.SuggestField(form, form.Fields["fieldSQbj"], cBj, csrf)
+		if err != nil {
+			_, _ = bot.Send(tb.ChatID(u.ChatId), err.Error())
+			break
+		}
+
+		formJson, _ := json.Marshal(form.Data)
 		body.Set("formData", string(formJson))
 
 		msg, _ = bot.Send(tb.ChatID(u.ChatId), "表单获取成功，正在打卡……")
