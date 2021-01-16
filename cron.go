@@ -18,6 +18,10 @@ func InitCronJobs(b *tb.Bot) {
 		ReportAll(b, ReportMode11, "")
 	})
 
-	// TODO: ReportModeLeaveSchool
+	// 1-0: 08:30
+	_, _ = c.AddFunc("CRON_TZ=Asia/Shanghai 30 08 * * *", func() {
+		ReportAll(b, ReportModeLeaveSchool, "")
+	})
+
 	c.Start()
 }
