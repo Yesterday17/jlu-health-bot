@@ -99,7 +99,7 @@ func (m ReportMode) Name() string {
 	case ReportMode11:
 		return "一测温一打卡"
 	case ReportModeLeaveSchool:
-		return "本科生健康状况申报(尚未实现)"
+		return "寒假离校一测温"
 	default:
 		return "未知"
 	}
@@ -127,7 +127,10 @@ func (m ReportMode) GetReportTime() ReportTime {
 			return ReportTimeNight
 		}
 	case ReportModeLeaveSchool:
-		// TODO
+		switch hour {
+		case 6, 7, 8, 9, 10, 11:
+			return ReportTimeDay
+		}
 	}
 	return ReportTimeUnknown
 }
